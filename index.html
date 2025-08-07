@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechCorp Enterprise Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Admin Login Screen (default visible) -->
+    <div id="adminLoginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="company-logo">
+                    <span class="company-icon">🏢</span>
+                </div>
+                <h1 id="companyName">TechCorp Enterprise</h1>
+                <p>Admin Access Required</p>
+            </div>
+            <form id="adminLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="adminUsername" class="form-label">Username</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword" class="form-label">Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="SuperAdmin123!" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Admin Login</button>
+            </form>
+            <div id="adminLoginError" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard hidden">
+        <div class="dashboard-header">
+            <div class="dashboard-header-left">
+                <div class="header-logo">
+                    <span class="company-icon">🏢</span>
+                </div>
+                <h2 id="dashboardCompanyName">TechCorp Enterprise</h2>
+            </div>
+            <div class="dashboard-header-right">
+                <span id="adminUserInfo" class="user-info">Administrator</span>
+                <button id="adminLogoutBtn" class="btn btn--outline btn--sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="dashboard-content">
+                <div class="dashboard-section">
+                    <h3>User Management</h3>
+                    <p>Manage users for your enterprise chat application (5-10 users required)</p>
+                    
+                    <div class="action-buttons">
+                        <button id="addUsersBtn" class="btn btn--primary">Add Users</button>
+                        <button id="importContactsBtn" class="btn btn--secondary">Import Contacts</button>
+                        <button id="generateQRBtn" class="btn btn--secondary">Generate QR Code</button>
+                    </div>
+
+                    <div id="usersList" class="users-list">
+                        <div class="users-count">
+                            <span id="userCount">0</span> users added (minimum 5 required)
+                        </div>
+                        <div id="usersContainer" class="users-container"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>System Status</h3>
+                    <div class="status-grid">
+                        <div class="status-card">
+                            <span class="status-icon">👥</span>
+                            <div class="status-info">
+                                <div class="status-label">Total Users</div>
+                                <div class="status-value" id="totalUsers">0</div>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-icon">💬</span>
+                            <div class="status-info">
+                                <div class="status-label">Active Chats</div>
+                                <div class="status-value">Ready</div>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-icon">📱</span>
+                            <div class="status-info">
+                                <div class="status-label">QR Access</div>
+                                <div class="status-value" id="qrStatus">Not Generated</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="system-actions">
+                        <button id="launchChatBtn" class="btn btn--primary btn--lg" disabled>Launch Chat Application</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Login Screen -->
+    <div id="userLoginScreen" class="login-container hidden">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="company-logo">
+                    <span class="company-icon">🏢</span>
+                </div>
+                <h1>TechCorp Enterprise Chat</h1>
+                <p>User Authentication</p>
+            </div>
+            <form id="userLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="userPhone" class="form-label">Phone Number</label>
+                    <input type="tel" id="userPhone" class="form-control" placeholder="+1234567890" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+            </form>
+            <div id="userLoginError" class="error-message hidden"></div>
+            
+            <div class="qr-login-section">
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <button id="qrLoginBtn" class="btn btn--secondary btn--full-width">Scan QR Code</button>
+            </div>
+
+            <div class="demo-accounts">
+                <h4>Demo Accounts:</h4>
+                <div class="demo-account-list" id="demoAccountsList"></div>
+            </div>
+
+            <div class="admin-access">
+                <button id="backToAdminBtn" class="btn btn--outline btn--sm">Admin Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Application -->
+    <div id="chatApp" class="chat-app hidden">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="header-logo">
+                    <span class="company-icon">🏢</span>
+                </div>
+                <h2 id="headerCompanyName">TechCorp Enterprise</h2>
+            </div>
+            <div class="chat-header-right">
+                <span id="userInfo" class="user-info"></span>
+                <button id="settingsBtn" class="btn btn--outline btn--sm">Settings</button>
+                <button id="logoutBtn" class="btn btn--outline btn--sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Chats</h3>
+                    <button id="newGroupBtn" class="btn btn--primary btn--sm">New Group</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search contacts...">
+                </div>
+                <div class="chat-list" id="chatList"></div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="main-chat">
+                <div id="welcomeScreen" class="welcome-screen">
+                    <div class="welcome-content">
+                        <h2>Welcome to TechCorp Enterprise Chat</h2>
+                        <p>Select a contact to start messaging</p>
+                        <div class="feature-list">
+                            <div class="feature-item">📱 Real-time messaging</div>
+                            <div class="feature-item">💬 Group conversations</div>
+                            <div class="feature-item">👥 Team collaboration</div>
+                            <div class="feature-item">📎 File sharing</div>
+                            <div class="feature-item">😊 Emoji reactions</div>
+                            <div class="feature-item">🔔 Instant notifications</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatArea" class="chat-area hidden">
+                    <div class="chat-header-info">
+                        <div class="chat-contact-info">
+                            <span id="chatContactAvatar" class="contact-avatar">👤</span>
+                            <div>
+                                <h4 id="chatContactName">Contact Name</h4>
+                                <span id="chatContactStatus" class="contact-status">online</span>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button id="chatInfoBtn" class="btn btn--outline btn--sm">Info</button>
+                        </div>
+                    </div>
+
+                    <div class="messages-container" id="messagesContainer"></div>
+
+                    <div class="message-input-container">
+                        <button id="attachBtn" class="attachment-btn" title="Attach file">📎</button>
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                        <div class="message-input-wrapper">
+                            <textarea id="messageInput" class="message-input" placeholder="Type a message..." rows="1"></textarea>
+                            <button id="emojiBtn" class="emoji-btn" title="Add emoji">😊</button>
+                        </div>
+                        <button id="sendBtn" class="send-btn" title="Send message">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Info Panel -->
+            <div id="chatInfoPanel" class="chat-info-panel hidden">
+                <div class="chat-info-header">
+                    <button id="closeChatInfo" class="close-btn">✕</button>
+                    <h3>Chat Info</h3>
+                </div>
+                <div class="chat-info-content">
+                    <div class="chat-info-contact">
+                        <span id="infoPanelAvatar" class="contact-avatar large">👤</span>
+                        <h4 id="infoPanelName">Contact Name</h4>
+                        <p id="infoPanelPhone">Phone</p>
+                    </div>
+                    <div id="groupMembersSection" class="group-members-section hidden">
+                        <h5>Group Members</h5>
+                        <div id="groupMembersList" class="group-members-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Users Modal -->
+    <div id="addUsersModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Users to System</h3>
+                <button id="closeAddUsers" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newUserName" class="form-label">Full Name</label>
+                    <input type="text" id="newUserName" class="form-control" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="newUserPhone" class="form-label">Phone Number</label>
+                    <input type="tel" id="newUserPhone" class="form-control" placeholder="+1234567890">
+                </div>
+                <div class="form-group">
+                    <label for="newUserRole" class="form-label">Role</label>
+                    <select id="newUserRole" class="form-control">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newUserAvatar" class="form-label">Avatar Emoji</label>
+                    <input type="text" id="newUserAvatar" class="form-control" placeholder="👤" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <button id="addUserBtn" class="btn btn--primary">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Contacts Modal -->
+    <div id="importContactsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Contacts</h3>
+                <button id="closeImportContacts" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="import-options">
+                    <div class="import-option">
+                        <h4>📱 Sync Phone Contacts</h4>
+                        <p>Import contacts from your phone (simulated)</p>
+                        <button id="syncPhoneBtn" class="btn btn--primary">Sync Phone Contacts</button>
+                    </div>
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+                    <div class="import-option">
+                        <h4>✍️ Manual Entry</h4>
+                        <p>Manually enter contact details</p>
+                        <button id="manualEntryBtn" class="btn btn--secondary">Manual Entry</button>
+                    </div>
+                </div>
+                <div id="manualEntryForm" class="manual-entry-form hidden">
+                    <div class="form-group">
+                        <label for="contactName" class="form-label">Contact Name</label>
+                        <input type="text" id="contactName" class="form-control" placeholder="Enter contact name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactPhone" class="form-label">Phone Number</label>
+                        <input type="tel" id="contactPhone" class="form-control" placeholder="+1234567890">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactRole" class="form-label">Role</label>
+                        <select id="contactRole" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button id="addContactBtn" class="btn btn--primary">Add Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrCodeModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>QR Code Access</h3>
+                <button id="closeQRCode" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="qr-code-container">
+                    <div id="qrCodeDisplay" class="qr-code-display">
+                        <div class="qr-code-placeholder">
+                            <div class="qr-pattern">
+                                <div class="qr-corner top-left"></div>
+                                <div class="qr-corner top-right"></div>
+                                <div class="qr-corner bottom-left"></div>
+                                <div class="qr-dots">
+                                    <div class="qr-dot"></div>
+                                    <div class="qr-dot"></div>
+                                    <div class="qr-dot"></div>
+                                    <div class="qr-dot"></div>
+                                    <div class="qr-dot"></div>
+                                    <div class="qr-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Scan this QR code to access the chat application</p>
+                    <div class="qr-url">
+                        <code id="qrURL">https://chat.techcorp.com/access</code>
+                    </div>
+                    <button id="shareQRBtn" class="btn btn--secondary">Share QR Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button id="closeSettings" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="adminControls" class="admin-section hidden">
+                    <h4>Company Settings</h4>
+                    <div class="form-group">
+                        <label for="companyNameInput" class="form-label">Company Name</label>
+                        <input type="text" id="companyNameInput" class="form-control" placeholder="Company Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyLogoInput" class="form-label">Company Logo (min 170x66px)</label>
+                        <input type="file" id="companyLogoInput" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <button id="clearDataBtn" class="btn btn--warning">Clear All Data</button>
+                        <button id="downloadDataBtn" class="btn btn--secondary">Download Data</button>
+                        <button id="disableAppBtn" class="btn btn--warning">Disable App Temporarily</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id="saveSettings" class="btn btn--primary">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Group Modal -->
+    <div id="newGroupModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Group</h3>
+                <button id="closeNewGroup" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="groupNameInput" class="form-label">Group Name</label>
+                    <input type="text" id="groupNameInput" class="form-control" placeholder="Enter group name">
+                </div>
+                <div class="form-group">
+                    <label for="groupDescriptionInput" class="form-label">Description (Optional)</label>
+                    <textarea id="groupDescriptionInput" class="form-control" placeholder="Enter group description..." rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Members</label>
+                    <div id="memberSelectionList" class="member-selection-list"></div>
+                </div>
+                <div class="form-group">
+                    <button id="createGroupBtn" class="btn btn--primary">Create Group</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div id="emojiPicker" class="emoji-picker hidden">
+        <div class="emoji-grid">
+            <span class="emoji-item">😀</span><span class="emoji-item">😃</span><span class="emoji-item">😄</span><span class="emoji-item">😁</span>
+            <span class="emoji-item">😅</span><span class="emoji-item">😂</span><span class="emoji-item">🤣</span><span class="emoji-item">😊</span>
+            <span class="emoji-item">😇</span><span class="emoji-item">🙂</span><span class="emoji-item">😉</span><span class="emoji-item">😌</span>
+            <span class="emoji-item">😍</span><span class="emoji-item">🥰</span><span class="emoji-item">😘</span><span class="emoji-item">😗</span>
+            <span class="emoji-item">😙</span><span class="emoji-item">😚</span><span class="emoji-item">😋</span><span class="emoji-item">😛</span>
+            <span class="emoji-item">😝</span><span class="emoji-item">😜</span><span class="emoji-item">🤪</span><span class="emoji-item">🤨</span>
+            <span class="emoji-item">🧐</span><span class="emoji-item">🤓</span><span class="emoji-item">😎</span><span class="emoji-item">🤩</span>
+            <span class="emoji-item">🥳</span><span class="emoji-item">😏</span><span class="emoji-item">😒</span><span class="emoji-item">😞</span>
+            <span class="emoji-item">😔</span><span class="emoji-item">😟</span><span class="emoji-item">😕</span><span class="emoji-item">🙁</span>
+            <span class="emoji-item">☹️</span><span class="emoji-item">😣</span><span class="emoji-item">😖</span><span class="emoji-item">😫</span>
+            <span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">👌</span><span class="emoji-item">✌️</span>
+            <span class="emoji-item">🤞</span><span class="emoji-item">🤟</span><span class="emoji-item">🤘</span><span class="emoji-item">🤙</span>
+            <span class="emoji-item">👏</span><span class="emoji-item">🙌</span><span class="emoji-item">👐</span><span class="emoji-item">🤲</span>
+            <span class="emoji-item">🙏</span><span class="emoji-item">💪</span><span class="emoji-item">🦾</span><span class="emoji-item">❤️</span>
+            <span class="emoji-item">🎉</span><span class="emoji-item">🔥</span><span class="emoji-item">⭐</span><span class="emoji-item">💯</span>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
